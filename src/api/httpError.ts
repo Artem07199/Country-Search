@@ -2,8 +2,9 @@ export class HttpError extends Error {
   public readonly status: number;
 
   constructor(status: number, message?: string) {
-    super(message);
+    super(message ?? `HTTP Error: ${status}`);
+    this.name = "HttpError";
     this.status = status;
-    throw new Error("Not implemented");
+    Object.setPrototypeOf(this, HttpError.prototype);
   }
 }
