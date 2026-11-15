@@ -7,17 +7,22 @@ export function debounce<Args extends unknown[]>(
   fn: (...args: Args) => void,
   delay: number,
 ): DebouncedFunction<Args> {
-  void fn;
-  void delay;
+  let timerId: ReturnType<typeof setTimeout> | undefined;
 
-  const stub = (...args: Args): void => {
-    void args;
-    throw new Error("Not implemented");
+  const cancel = (): void => {
+    if (timerId !== undefined) {
+      clearTimeout(timerId);
+      timerId = undefined;
+    }
   };
 
-  return Object.assign(stub, {
-    cancel: (): void => {
-      throw new Error("Not implemented");
-    },
-  });
+  const debounced = (...args: Args): void => {
+    cancel();
+    timerId = setTimeout(() => {
+      timerId = undefined;
+      fn(...args);
+    }, delay);
+  };
+
+  return Object.assign(debounced, { cancel });
 }
